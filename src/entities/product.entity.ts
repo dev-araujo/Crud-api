@@ -12,7 +12,7 @@ export class Product {
   description: string;
 
   @Column()
-  weight: number;
+  price: number;
 
   @CreateDateColumn({
     name: "created_at",
