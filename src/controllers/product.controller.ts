@@ -3,6 +3,7 @@ import AppDataSource from "../database/connection";
 import { Product } from "../entities/product.entity";
 import { Repository } from "typeorm";
 import bodyParser from "body-parser";
+import { validate } from "class-validator";
 
 class ProductController {
   private productRepository: Repository<Product>;
@@ -29,6 +30,13 @@ class ProductController {
       price,
       description,
     ];
+
+    const errors = await validate(product);
+    if (errors.length > 0) {
+      return response.status(422).send({
+        errors,
+      });
+    }
 
     const productDb = await productRepository.save(product);
 
@@ -68,6 +76,14 @@ class ProductController {
       price,
       description,
     ];
+
+    const errors = await validate(product);
+    if (errors.length > 0) {
+      return response.status(422).send({
+        errors,
+      });
+    }
+
     const productDB = await productRepository.save(product);
     return response.status(200).send({
       data: productDB,
