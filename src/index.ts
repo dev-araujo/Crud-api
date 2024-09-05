@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 8080;
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.post("/api/products", productController.create);
 app.get("/api/products", productController.findAll);
@@ -24,3 +25,6 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`server running in port ${PORT}`);
 });
+function cors(): any {
+  throw new Error("Function not implemented.");
+}
