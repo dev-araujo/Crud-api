@@ -1,50 +1,56 @@
 import { Request, Response } from "express";
 import AppDataSource from "../database/connection";
 import { Product } from "../entities/product.entity";
-import { Repository } from "typeorm";
-import bodyParser from "body-parser";
 import { validate } from "class-validator";
+import { ProductRepository } from "../repositories/product.repository";
+import CreateProductDTO from "../dto/create.product.dto";
 
 class ProductController {
-  private productRepository: Repository<Product>;
+  private productRepository: ProductRepository;
   constructor() {
-    this.productRepository = AppDataSource.getRepository(Product);
+    this.productRepository = new ProductRepository();
   }
-  async findAll(request: Request, response: Response): Promise<Response> {
-    const productRepository = AppDataSource.getRepository(Product);
-    const products = await productRepository.find();
+  findAll = async (request: Request, response: Response): Promise<Response> => {
+    const products = await this.productRepository.getAll();
 
     return response.status(200).send({
       data: products,
       status: 200,
     });
-  }
+  };
 
-  async create(request: Request, response: Response): Promise<Response> {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { name, description, price } = request.body;
-    const productRepository = AppDataSource.getRepository(Product);
 
-    const product = new Product();
-    [product.name, product.price, product.description] = [
-      name,
-      price,
-      description,
-    ];
+    const dto = new CreateProductDTO();
+    dto.name = name;
+    dto.description = description;
+    dto.price = price;
 
-    const errors = await validate(product);
-    if (errors.length > 0) {
-      return response.status(422).send({
-        errors,
-      });
-    }
+    const productDb = await this.productRepository.create(dto);
+    // const productRepository = AppDataSource.getRepository(Product);
 
-    const productDb = await productRepository.save(product);
+    // const product = new Product();
+    // [product.name, product.price, product.description] = [
+    //   name,
+    //   price,
+    //   description,
+    // ];
+
+    // const errors = await validate(product);
+    // if (errors.length > 0) {
+    //   return response.status(422).send({
+    //     errors,
+    //   });
+    // }
+
+    // const productDb = await productRepository.save(product);
 
     return response.status(201).send({
       data: productDb,
       status: 201,
     });
-  }
+  };
 
   async findOne(request: Request, response: Response): Promise<Response> {
     const id = request.params.id;

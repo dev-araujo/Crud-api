@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -15,8 +16,5 @@ app.use(cors());
 app.use(routes);
 
 app.listen(PORT, () => {
-  console.log(`server running in port ${PORT}`);
+  console.log(`server running on port ${PORT}`);
 });
-function cors(): any {
-  throw new Error("Function not implemented.");
-}
